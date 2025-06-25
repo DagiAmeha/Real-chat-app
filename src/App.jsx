@@ -3,9 +3,22 @@ import Chat from "./components/chat/Chat";
 import Detail from "./components/detail/Detail";
 import Login from "./components/login/Login";
 import Notification from "./components/notification/Notification";
+import { useEffect } from "react";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./lib/firebase";
 
 const App = () => {
   const user = false;
+
+  useEffect(() => {
+    const unSub = onAuthStateChanged(auth, (currentUser) => {
+      console.log(currentUser);
+    });
+
+    return () => {
+      unSub();
+    };
+  });
   return (
     <div className="container">
       {user ? (

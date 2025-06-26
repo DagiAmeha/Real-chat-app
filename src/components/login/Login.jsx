@@ -34,7 +34,6 @@ function Login() {
     const { email, password } = Object.fromEntries(formData);
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      toast.success("Login successful!");
     } catch (error) {
       console.error(error);
       toast.error("Login failed: " + error.message);
@@ -94,7 +93,7 @@ function Login() {
         <form onSubmit={handleRegister}>
           <label htmlFor="file">
             <img src={avatar.url || "./avatar.png"} alt="" />
-            Upload an image{" "}
+            Upload an image
           </label>
           <input
             type="file"

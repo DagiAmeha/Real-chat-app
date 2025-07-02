@@ -21,6 +21,8 @@ function Chat() {
     url: "",
   });
 
+  const textareaRef = useRef(null);
+
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } =
     useChatStore();
   const { currentUser } = useUserStore();
@@ -96,6 +98,9 @@ function Chat() {
       url: "",
     });
     setText("");
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "40px";
+    }
   };
 
   const handleImg = (e) => {
@@ -122,7 +127,7 @@ function Chat() {
           <img src="./info.png" alt="" />
         </div>
       </div>
-      <div className="center">
+      <div className="center chatArea">
         {chat?.messages?.map((message) => (
           <div
             className={
@@ -130,7 +135,10 @@ function Chat() {
             }
             key={message?.createdAt}
           >
-            <div className="texts">
+            {message.senderId === user.id && (
+              <img src={user?.avatar || "./avatar.png"} alt="" />
+            )}
+            <div className="texts messageText">
               {message.img && <img src={message.img} alt="" />}
               <p>{message.text}</p>
               {/* <span>{message.}</span> */}
@@ -160,7 +168,9 @@ function Chat() {
           <img src="./camera.png" alt="" />
           <img src="./mic.png" alt="" />
         </div>
-        <input
+
+        <textarea
+          ref={textareaRef}
           type="text"
           placeholder={
             isCurrentUserBlocked || isReceiverBlocked
@@ -168,7 +178,11 @@ function Chat() {
               : "Type a message..."
           }
           value={text}
-          onChange={(e) => setText(e.target.value)}
+          onChange={(e) => {
+            setText(e.target.value);
+            e.target.style.height = "40px"; // Reset height
+            e.target.style.height = e.target.scrollHeight + "px"; // Set to scrollHeight
+          }}
           disabled={isCurrentUserBlocked || isReceiverBlocked}
         />
         <div className="emoji">

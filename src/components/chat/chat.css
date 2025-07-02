@@ -58,15 +58,15 @@
   .center {
     padding: 20px;
     flex: 1;
-    overflow: scroll;
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 10px;
 
     .message {
       max-width: 70%;
       display: flex;
-      gap: 20px;
+      gap: 10px;
 
       &.own {
         align-self: flex-end;
@@ -85,15 +85,16 @@
       }
 
       .texts {
-        flex: 1;
+        /* flex: 1; */
         display: flex;
         flex-direction: column;
-        gap: 5px;
+        gap: 2px;
 
         p {
-          padding: 20px;
+          /* flex-shrink: 1; */
+          padding: 10px 20px;
           background-color: rgba(17, 25, 40, 0.3);
-          border-radius: 10px;
+          border-radius: 20px;
         }
 
         span {
@@ -104,6 +105,14 @@
           height: 300px;
           border-radius: 10px;
           object-fit: cover;
+        }
+      }
+      .messageText {
+        p {
+          display: inline-block;
+          width: auto;
+          /* max-width: 100%; */
+          word-break: break-word;
         }
       }
     }
@@ -125,7 +134,7 @@
       height: 20px;
       cursor: pointer;
     }
-    input {
+    textarea {
       flex: 1;
       background-color: rgba(17, 25, 40, 0.5);
       border: none;
@@ -134,7 +143,16 @@
       padding: 10px;
       font-size: 16px;
       border-radius: 10px;
-
+      resize: none;
+      height: 44px;
+      /* min-height: 40px; 
+      max-height: 120px;  */
+      /* overflow: hidden; */
+      scrollbar-width: 0px;
+      max-height: 120px;
+      line-height: 1.5;
+      word-break: break-word;
+      white-space: pre-wrap;
       &:disabled {
         cursor: not-allowed;
       }
@@ -162,4 +180,40 @@
       }
     }
   }
+}
+
+/* For Chrome, Edge, and Safari */
+.chatList::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.chatList::-webkit-scrollbar-thumb {
+  background: #5183fe;
+  border-radius: 8px;
+}
+
+.chatList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* For the chat area (if needed) */
+.chatArea::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+.chatArea::-webkit-scrollbar-thumb {
+  background: #5183fe;
+  border-radius: 8px;
+}
+
+.chatArea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Optional: Hide scrollbar when not scrolling */
+.chatList {
+  scrollbar-width: thin; /* Firefox */
+  scrollbar-color: #5183fe transparent;
 }

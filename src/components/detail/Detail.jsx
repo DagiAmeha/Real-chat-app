@@ -1,24 +1,48 @@
-import { arrayRemove, arrayUnion, doc, updateDoc } from "firebase/firestore";
+import {
+  arrayRemove,
+  arrayUnion,
+  doc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
 import { useChatStore } from "../../lib/chatStore";
 import { auth, db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 
 function Detail() {
+  const [imgs, setImgs] = useState([]);
   const { chatId, user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
     useChatStore();
 
+  useEffect(() => {
+    const unSub = onSnapshot(doc(db, "chats", chatId), (doc) => {
+      const messages = doc.data()?.messages;
+      const img = messages
+        ? messages
+            .filter((message) => message.img)
+            .map((message) => message.img)
+            .slice(0, 6)
+        : [];
+
+      setImgs(img);
+    });
+
+    return () => {
+      unSub();
+    };
+  });
   const { currentUser } = useUserStore();
   const handleBlock = async () => {
     if (!user) return;
 
-    const userDocRef = doc(db, "users", user.id);
+    const userDocRef = doc(db, "users", currentUser.id);
     try {
       await updateDoc(userDocRef, {
         blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
       });
-      changeBlock();
+      changeBlock(chatId, user);
     } catch (err) {
       console.error("Error blocking user:", err);
     }
@@ -49,42 +73,16 @@ function Detail() {
             <img src="./arrowDown.png" alt="" />
           </div>
           <div className="photos">
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img src="image.png" alt="" />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="./download.png" alt="" className="icon" />
-            </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img src="image.png" alt="" />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="./download.png" alt="" className="icon" />
-            </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img src="image.png" alt="" />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="./download.png" alt="" className="icon" />
-            </div>
-            <div className="photoItem">
-              <div className="photoDetail">
-                <img src="image.png" alt="" />
-                <span>photo_2024_2.png</span>
-              </div>
-              <img src="./download.png" alt="" className="icon" />
-            </div>
+            {imgs.length !== 0 &&
+              imgs
+                .slice(-6)
+                .map((img, idx) => (
+                  <img src={img} key={idx} alt="" loading="lazy" />
+                ))}
           </div>
         </div>
-        <div className="option">
-          <div className="title">
-            <span>Shared Files</span>
-            <img src="./arrowUp.png" alt="" />
-          </div>
-        </div>
+      </div>
+      <div className="buttons">
         <button onClick={handleBlock}>
           {isCurrentUserBlocked
             ? "You are Blocked?"

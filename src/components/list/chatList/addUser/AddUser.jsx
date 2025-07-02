@@ -13,11 +13,13 @@ import "./addUser.css";
 import { db } from "../../../../lib/firebase";
 import { use, useState } from "react";
 import { useUserStore } from "../../../../lib/userStore";
+import { useChatStore } from "../../../../lib/chatStore";
 
-function AddUser() {
+function AddUser({ setAddMode, filteredChats }) {
   const [user, setUser] = useState(null);
 
   const { currentUser } = useUserStore();
+  const { changeChat } = useChatStore();
   const handleSearch = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -39,6 +41,13 @@ function AddUser() {
   };
 
   const handleAdd = async () => {
+    if (
+      filteredChats.some((chat) => chat.user.id === user.id) ||
+      user.id === currentUser.id
+    ) {
+      setAddMode(false);
+      return;
+    }
     const chatRef = collection(db, "chats");
     console.log(chatRef);
     const userChatRef = collection(db, "userchats");
@@ -54,6 +63,7 @@ function AddUser() {
         chats: arrayUnion({
           chatId: newChatRef.id,
           lastMessage: "",
+          isSeen: false,
           receiverId: currentUser.id,
           updatedAt: Date.now(),
         }),
@@ -63,10 +73,13 @@ function AddUser() {
         chats: arrayUnion({
           chatId: newChatRef.id,
           lastMessage: "",
+          isSeen: true,
           receiverId: user.id,
           updatedAt: Date.now(),
         }),
       });
+      setAddMode(false);
+      changeChat(newChatRef.id, user);
     } catch (err) {
       console.log(err);
     }

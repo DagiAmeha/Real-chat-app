@@ -9,6 +9,7 @@ import { useChatStore } from "../../../lib/chatStore";
 function ChatList() {
   const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
+  const [input, setInput] = useState("");
 
   const { currentUser } = useUserStore();
   const { changeChat } = useChatStore();
@@ -33,7 +34,7 @@ function ChatList() {
 
         setChats(
           chatsData.sort((a, b) => {
-            b.updatedAt - a.updatedAt;
+            return b.updatedAt - a.updatedAt;
           })
         );
       }
@@ -64,12 +65,23 @@ function ChatList() {
       console.error("Error updating chat:", err);
     }
   };
+
+  const filteredChats = chats.filter((chat) =>
+    chat.user.username.toLowerCase().includes(input.toLowerCase())
+  );
   return (
     <div className="chatList">
       <div className="search">
         <div className="searchBar">
           <img src="/search.png" alt="" />
-          <input type="text" placeholder="Search" />
+          <input
+            type="text"
+            placeholder="Search"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+            }}
+          />
         </div>
         <img
           src={addMode ? "./minus.png" : "./plus.png"}
@@ -78,24 +90,51 @@ function ChatList() {
           onClick={() => setAddMode((prev) => !prev)}
         />
       </div>
-      {chats.map((chat) => {
-        return (
-          <div
-            className="item"
-            key={chat.chatId}
-            onClick={() => handleSelect(chat)}
-            style={{ backgroundColor: chat.isSeen ? "transparent" : "#5183fe" }}
-          >
-            <img src={chat.user.avatar || "./avatar.png"} alt="" />
-            <div className="texts">
-              <span>{chat.user.username}</span>
-              <p>{chat.lastMessage}</p>
+      {filteredChats.length > 0 ? (
+        filteredChats.map((chat) => {
+          return (
+            <div
+              className="item"
+              key={chat.chatId}
+              onClick={() => handleSelect(chat)}
+              style={{
+                backgroundColor: chat.isSeen ? "transparent" : "#5183fe",
+              }}
+            >
+              <img
+                src={
+                  chat.user.blocked.includes(currentUser.id)
+                    ? "./avatar.png"
+                    : chat.user.avatar || "./avatar.png"
+                }
+                alt=""
+              />
+              <div className="texts">
+                <span>
+                  {chat.user.blocked.includes(currentUser.id)
+                    ? "User"
+                    : chat.user.username}
+                </span>
+                <p>
+                  {chat.lastMessage.length > 20
+                    ? `${chat.lastMessage.slice(0, 20)}...`
+                    : chat.lastMessage}
+                </p>
+              </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })
+      ) : (
+        <div className="noChats">
+          <p style={{ textAlign: "center" }}>
+            No chats found. click + to start conversation.
+          </p>
+        </div>
+      )}
 
-      {addMode && <AddUser />}
+      {addMode && (
+        <AddUser setAddMode={setAddMode} filteredChats={filteredChats} />
+      )}
     </div>
   );
 }

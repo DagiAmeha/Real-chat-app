@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AddUser from "./addUser/AddUser";
 import "./chatList.css";
+import "../userInfo/userInfo.css";
 import { useUserStore } from "../../../lib/userStore";
 import { doc, getDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../lib/firebase";
@@ -101,14 +102,15 @@ function ChatList() {
                 backgroundColor: chat.isSeen ? "transparent" : "#5183fe",
               }}
             >
-              <img
-                src={
-                  chat.user.blocked.includes(currentUser.id)
-                    ? "./avatar.png"
-                    : chat.user.avatar || "./avatar.png"
-                }
-                alt=""
-              />
+              {chat.user.blocked.includes(currentUser.id) ||
+              !chat.user.avatar ? (
+                <div className="profile profile-letter">
+                  {chat.user.username[0]}
+                </div>
+              ) : (
+                <img src={chat.user.avatar} alt="" />
+              )}
+
               <div className="texts">
                 <span>
                   {chat.user.blocked.includes(currentUser.id)

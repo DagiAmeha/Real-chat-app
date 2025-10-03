@@ -2,7 +2,7 @@
   width: max-content;
   height: max-content;
   padding: 30px;
-  background-color: rgba(17, 25, 40, 0.781);
+  background-color: rgba(17, 25, 40, 0.894);
   border-radius: 10px;
   position: absolute;
   top: 0;
@@ -60,4 +60,7 @@
       cursor: pointer;
     }
   }
+}
+.not-found {
+  padding: 20px;
 }

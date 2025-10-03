@@ -12,6 +12,8 @@ import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
 import upload from "../../lib/upload";
+import "../list/userInfo/userInfo.css";
+
 function Chat() {
   const [chat, setChat] = useState({});
   const [open, setOpen] = useState(false);
@@ -20,6 +22,7 @@ function Chat() {
     file: null,
     url: "",
   });
+  const [showDialog, setShowDialog] = useState(false); // NEW → for modal visibility
 
   const textareaRef = useRef(null);
 
@@ -42,14 +45,13 @@ function Chat() {
       unSub();
     };
   }, [chatId]);
-  console.log("Chat Data:", chat);
+
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
-    // setOpen(false);
   };
 
   const handleSend = async () => {
-    if (text === "") return;
+    if (text === "" && !img.file) return;
 
     let imgUrl = null;
 
@@ -70,16 +72,17 @@ function Chat() {
 
       userIds.forEach(async (id) => {
         const userChatsRef = doc(db, "userchats", id);
+        console.log("user id :", id);
         const userChatsSnapshot = await getDoc(userChatsRef);
 
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
-          console.log("User Chats Data:", userChatsData);
           const chatIndex = userChatsData.chats.findIndex(
             (c) => c.chatId === chatId
           );
-          console.log("Chat Index:", chatIndex);
-          userChatsData.chats[chatIndex].lastMessage = text;
+
+          userChatsData.chats[chatIndex].lastMessage =
+            text || (imgUrl ? "📷 Image" : "");
           userChatsData.chats[chatIndex].isSeen =
             id === currentUser.id ? true : false;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
@@ -93,11 +96,10 @@ function Chat() {
       console.error("Error sending message:", err);
     }
 
-    setImg({
-      file: null,
-      url: "",
-    });
+    // Reset states
+    setImg({ file: null, url: "" });
     setText("");
+    setShowDialog(false);
     if (textareaRef.current) {
       textareaRef.current.style.height = "40px";
     }
@@ -109,13 +111,20 @@ function Chat() {
         file: e.target.files[0],
         url: URL.createObjectURL(e.target.files[0]),
       });
+      setShowDialog(true); // Open modal immediately
     }
   };
+
   return (
     <div className="chat">
+      {/* Top user info */}
       <div className="top">
         <div className="user">
-          <img src={user?.avatar || "./avatar.png"} alt="" />
+          {user.avatar ? (
+            <img className="profile" src={user.avatar} alt="" />
+          ) : (
+            <div className="profile profile-letter">{user.username[0]}</div>
+          )}
           <div className="texts">
             <span>{user?.username}</span>
             <p>Lorem ipsum dolor sit amet consectetur</p>
@@ -127,33 +136,48 @@ function Chat() {
           <img src="./info.png" alt="" />
         </div>
       </div>
-      <div className="center chatArea">
-        {chat?.messages?.map((message) => (
-          <div
-            className={
-              message.senderId === currentUser.id ? "message own" : "message"
-            }
-            key={message?.createdAt}
-          >
-            {message.senderId === user.id && (
-              <img src={user?.avatar || "./avatar.png"} alt="" />
-            )}
-            <div className="texts messageText">
-              {message.img && <img src={message.img} alt="" />}
-              <p>{message.text}</p>
-              {/* <span>{message.}</span> */}
-            </div>
-          </div>
-        ))}
 
-        {img.url && (
-          <div className="message own">
-            <div className="texts">
-              <img src={img.url} alt="" />
+      {/* Chat messages */}
+      <div className="center chatArea">
+        {chat?.messages?.length !== 0 ? (
+          chat?.messages?.map((message, index) => (
+            <div
+              className={
+                message.senderId === currentUser.id ? "message own" : "message"
+              }
+              key={index}
+            >
+              {message.senderId === user?.id &&
+                (user.avatar ? (
+                  <img className="profile" src={user.avatar} alt="" />
+                ) : (
+                  <div className="profile profile-letter">
+                    {user.username[0]}
+                  </div>
+                ))}
+              <div
+                className={`texts messageText ${
+                  message.img && "image-message"
+                } `}
+              >
+                {message.img && <img src={message.img} alt="" />}
+                {message.text && (
+                  <p className={`text-message ${message.img && "transparent"}`}>
+                    {message.text}
+                  </p>
+                )}
+              </div>
             </div>
+          ))
+        ) : (
+          <div className="no-message">
+            <p>No messages yet. start a conversation.</p>
           </div>
         )}
+        <div ref={endRef}></div>
       </div>
+
+      {/* Bottom input area */}
       <div className="bottom">
         <div className="icons">
           <label htmlFor="file">
@@ -165,7 +189,6 @@ function Chat() {
             style={{ display: "none" }}
             onChange={handleImg}
           />
-          <img src="./camera.png" alt="" />
           <img src="./mic.png" alt="" />
         </div>
 
@@ -187,6 +210,7 @@ function Chat() {
         />
         <div className="emoji">
           <img
+            style={{ width: "32px", height: "32px" }}
             src="./emoji.png"
             alt=""
             onClick={() => setOpen((prev) => !prev)}
@@ -203,6 +227,43 @@ function Chat() {
           Send
         </button>
       </div>
+
+      {/* MODAL PREVIEW */}
+      {showDialog && (
+        <div
+          className="overlay"
+          onClick={() => {
+            setImg({ file: null, url: "" });
+            setShowDialog(false);
+            setText("");
+          }}
+        >
+          <div className="dialog">
+            <img src={img.url} alt="preview" className="preview-img" />
+            <textarea
+              className="caption-input"
+              placeholder="Add a caption..."
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+            />
+            <div className="actions">
+              <button
+                className="cancel-btn"
+                onClick={() => {
+                  setImg({ file: null, url: "" });
+                  setShowDialog(false);
+                  setText("");
+                }}
+              >
+                Cancel
+              </button>
+              <button className="sendButton" onClick={handleSend}>
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

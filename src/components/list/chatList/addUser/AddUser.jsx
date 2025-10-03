@@ -17,8 +17,10 @@ import { useChatStore } from "../../../../lib/chatStore";
 
 function AddUser({ setAddMode, filteredChats }) {
   const [user, setUser] = useState(null);
+  const [found, setFound] = useState(true);
 
   const { currentUser } = useUserStore();
+  console.log("current user id; ", currentUser.id);
   const { changeChat } = useChatStore();
   const handleSearch = async (e) => {
     e.preventDefault();
@@ -34,6 +36,10 @@ function AddUser({ setAddMode, filteredChats }) {
 
       if (!querySnapshot.empty) {
         setUser(querySnapshot.docs[0].data());
+        console.log("user id :", querySnapshot.docs[0].data().id);
+      } else {
+        setFound(false);
+        setUser(null);
       }
     } catch (err) {
       console.log(err);
@@ -59,25 +65,36 @@ function AddUser({ setAddMode, filteredChats }) {
         messages: [],
       });
 
-      await updateDoc(doc(userChatRef, user.id), {
-        chats: arrayUnion({
-          chatId: newChatRef.id,
-          lastMessage: "",
-          isSeen: false,
-          receiverId: currentUser.id,
-          updatedAt: Date.now(),
-        }),
-      });
+      // Update the other user's userchats, creating it if it doesn't exist
+      await setDoc(
+        doc(userChatRef, user.id),
+        {
+          chats: arrayUnion({
+            chatId: newChatRef.id,
+            lastMessage: "",
+            isSeen: false,
+            receiverId: currentUser.id,
+            updatedAt: Date.now(),
+          }),
+        },
+        { merge: true }
+      );
 
-      await updateDoc(doc(userChatRef, currentUser.id), {
-        chats: arrayUnion({
-          chatId: newChatRef.id,
-          lastMessage: "",
-          isSeen: true,
-          receiverId: user.id,
-          updatedAt: Date.now(),
-        }),
-      });
+      // Update current user's userchats
+      await setDoc(
+        doc(userChatRef, currentUser.id),
+        {
+          chats: arrayUnion({
+            chatId: newChatRef.id,
+            lastMessage: "",
+            isSeen: true,
+            receiverId: user.id,
+            updatedAt: Date.now(),
+          }),
+        },
+        { merge: true }
+      );
+
       setAddMode(false);
       changeChat(newChatRef.id, user);
     } catch (err) {
@@ -90,14 +107,22 @@ function AddUser({ setAddMode, filteredChats }) {
         <input type="text" placeholder="Username" name="username" />
         <button>Search</button>
       </form>
-      {user && (
+      {user ? (
         <div className="user">
           <div className="detail">
             <img src={user.avatar || "./avatar.png"} alt="" />
-            <span>{user.username}</span>
+            <p>{user.username}</p>
           </div>
           <button onClick={handleAdd}>Add User</button>
         </div>
+      ) : (
+        found || (
+          <div className="not-found">
+            <p style={{ textAlign: "center" }}>
+              No user found with this username.
+            </p>
+          </div>
+        )
       )}
     </div>
   );

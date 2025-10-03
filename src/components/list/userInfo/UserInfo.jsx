@@ -6,12 +6,17 @@ function UserInfo() {
   return (
     <div className="userInfo">
       <div className="user">
-        <img src={currentUser?.avatar || "./avatar.png"} alt="" />
+        {currentUser.avatar ? (
+          <img className="profile" src={currentUser.avatar} alt="" />
+        ) : (
+          <div className="profile profile-letter">
+            {currentUser.username[0]}
+          </div>
+        )}
         <h2>{currentUser?.username}</h2>
       </div>
 
       <div className="icons">
-        <img src="./more.png" alt="" />
         <img src="./video.png" alt="" />
         <img src="./edit.png" alt="" />
       </div>

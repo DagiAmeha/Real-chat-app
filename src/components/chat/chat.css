@@ -77,33 +77,34 @@
           }
         }
       }
-      img {
-        width: 30px;
-        height: 30px;
+      .profile {
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
         object-fit: cover;
       }
-
+      .profile-letter {
+        text-transform: uppercase;
+        font-size: 14px;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(17, 25, 40, 0.626);
+      }
       .texts {
         /* flex: 1; */
         display: flex;
         flex-direction: column;
         gap: 2px;
 
-        p {
-          /* flex-shrink: 1; */
-          padding: 10px 20px;
-          background-color: rgba(17, 25, 40, 0.3);
-          border-radius: 20px;
-        }
-
         span {
           font-size: 13px;
         }
         img {
           width: 100%;
-          height: 300px;
           border-radius: 10px;
+          height: 300px;
           object-fit: cover;
         }
       }
@@ -122,7 +123,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 20px;
+    gap: 10px;
     border-top: 1px solid #dddddd35;
 
     .icons {
@@ -134,29 +135,7 @@
       height: 20px;
       cursor: pointer;
     }
-    textarea {
-      flex: 1;
-      background-color: rgba(17, 25, 40, 0.5);
-      border: none;
-      outline: none;
-      color: white;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
-      resize: none;
-      height: 44px;
-      /* min-height: 40px; 
-      max-height: 120px;  */
-      /* overflow: hidden; */
-      scrollbar-width: 0px;
-      max-height: 120px;
-      line-height: 1.5;
-      word-break: break-word;
-      white-space: pre-wrap;
-      &:disabled {
-        cursor: not-allowed;
-      }
-    }
+
     .emoji {
       position: relative;
 
@@ -164,19 +143,6 @@
         position: absolute;
         bottom: 50px;
         left: 0;
-      }
-    }
-    .sendButton {
-      padding: 10px 20px;
-      background-color: #5183fe;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-
-      &:disabled {
-        background-color: #5182feb4;
-        cursor: not-allowed;
       }
     }
   }
@@ -216,4 +182,112 @@
 .chatList {
   scrollbar-width: thin; /* Firefox */
   scrollbar-color: #5183fe transparent;
+}
+/* Modal overlay */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 12px;
+  z-index: 1000;
+}
+
+/* Dialog box */
+.dialog {
+  background: rgb(17, 25, 40, 0.75);
+  width: 400px;
+  max-width: 90%;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.preview-img {
+  max-height: 250px;
+  border-radius: 10px;
+  object-fit: contain;
+  /* border-radius: 8px; */
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.sendButton,
+.cancel-btn {
+  padding: 10px 20px;
+  background-color: #5183fe;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+
+  &:disabled {
+    background-color: #5182feb4;
+    cursor: not-allowed;
+  }
+}
+.cancel-btn {
+  background-color: #fff;
+  color: #000;
+}
+textarea {
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.214);
+  border: none;
+  outline: none;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 10px;
+  resize: none;
+  height: 40px;
+  /* max-height: 120px;  */
+  /* overflow: hidden; */
+  scrollbar-width: 0px;
+  max-height: 100px;
+  line-height: 1.5;
+  word-break: break-word;
+  white-space: pre-wrap;
+  -ms-overflow-style: none;
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+textarea::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.no-message {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  p {
+    padding: 10px 20px;
+    background-color: rgba(17, 25, 40, 0.3);
+    border-radius: 20px;
+  }
+}
+.image-message {
+  background-color: rgba(17, 25, 40, 0.3);
+  padding: 2px;
+  border-radius: 10px;
+}
+.text-message {
+  /* flex-shrink: 1; */
+
+  background-color: rgba(17, 25, 40, 0.3);
+  padding: 10px 20px;
+  border-radius: 20px;
+}
+.transparent {
+  background-color: transparent;
 }

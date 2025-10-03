@@ -9,7 +9,7 @@ import { useChatStore } from "../../lib/chatStore";
 import { auth, db } from "../../lib/firebase";
 import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 function Detail() {
   const [imgs, setImgs] = useState([]);
@@ -35,14 +35,14 @@ function Detail() {
   });
   const { currentUser } = useUserStore();
   const handleBlock = async () => {
+    console.log(user);
     if (!user) return;
-
     const userDocRef = doc(db, "users", currentUser.id);
     try {
       await updateDoc(userDocRef, {
         blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
       });
-      changeBlock(chatId, user);
+      changeBlock();
     } catch (err) {
       console.error("Error blocking user:", err);
     }
@@ -50,7 +50,13 @@ function Detail() {
   return (
     <div className="detail">
       <div className="user">
-        <img src={user?.avatar || "./avatar.png"} alt="" />
+        {user.avatar ? (
+          <img className="detail-profile" src={user.avatar} alt="" />
+        ) : (
+          <div className="detail-profile detail-profile-letter">
+            {user.username[0]}
+          </div>
+        )}
         <h2>{user?.username}</h2>
         <p>Lorem ipsum dolor sit </p>
       </div>
@@ -85,7 +91,7 @@ function Detail() {
       <div className="buttons">
         <button onClick={handleBlock}>
           {isCurrentUserBlocked
-            ? "You are Blocked?"
+            ? "You are Blocked"
             : isReceiverBlocked
             ? "User Blocked"
             : "Block User"}

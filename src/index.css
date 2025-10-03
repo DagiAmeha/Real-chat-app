@@ -21,7 +21,7 @@ body {
   width: 80vw;
   height: 90vh;
   background-color: rgb(17, 25, 40, 0.75);
-  backdrop-filter: blur(19px) saturate(180%);
+  backdrop-filter: blur(50px) saturate(300%);
   border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.125);
   display: flex;

@@ -46,25 +46,30 @@ function Login() {
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const formData = new FormData(e.target);
 
+    const formData = new FormData(e.target);
     const { username, email, password } = Object.fromEntries(formData);
 
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
-
-      const imgUrl = await upload(avatar.file);
+      let imgUrl;
+      // Pass uid when uploading
+      if (avatar.file) {
+        imgUrl = await upload(avatar.file, res.user.uid);
+      }
 
       await setDoc(doc(db, "users", res.user.uid), {
         id: res.user.uid,
         username,
         email,
         blocked: [],
-        avatar: imgUrl,
+        avatar: imgUrl ? imgUrl : null,
       });
+
       await setDoc(doc(db, "userchats", res.user.uid), {
         chats: [],
       });
+
       toast.success("User created successfully!");
     } catch (error) {
       console.error(error);
@@ -75,6 +80,7 @@ function Login() {
       setAvatar({ file: null, url: "" });
     }
   };
+
   return (
     <div className="login">
       <div className="item">

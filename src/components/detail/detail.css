@@ -84,3 +84,19 @@
     }
   }
 }
+
+.detail-profile {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.detail-profile-letter {
+  text-transform: uppercase;
+  font-size: 48px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(17, 25, 40, 0.5);
+}

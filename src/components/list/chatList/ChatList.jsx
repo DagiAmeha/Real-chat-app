@@ -74,7 +74,7 @@ function ChatList() {
     <div className="chatList">
       <div className="search">
         <div className="searchBar">
-          <img src="/search.png" alt="" />
+          <img src="imgs/search.png" alt="" />
           <input
             type="text"
             placeholder="Search"
@@ -85,7 +85,7 @@ function ChatList() {
           />
         </div>
         <img
-          src={addMode ? "./minus.png" : "./plus.png"}
+          src={addMode ? "imgs/minus.png" : "imgs/plus.png"}
           alt=""
           className="add"
           onClick={() => setAddMode((prev) => !prev)}

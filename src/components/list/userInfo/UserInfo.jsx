@@ -17,8 +17,8 @@ function UserInfo() {
       </div>
 
       <div className="icons">
-        <img src="./video.png" alt="" />
-        <img src="./edit.png" alt="" />
+        <img src="imgs/video.png" alt="" />
+        <img src="imgs/edit.png" alt="" />
       </div>
     </div>
   );

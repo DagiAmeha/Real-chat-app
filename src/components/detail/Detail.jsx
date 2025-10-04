@@ -58,25 +58,25 @@ function Detail() {
           </div>
         )}
         <h2>{user?.username}</h2>
-        <p>Lorem ipsum dolor sit </p>
+        <p>last seen recently</p>
       </div>
       <div className="info">
         <div className="option">
           <div className="title">
             <span>Chat Settings</span>
-            <img src="./arrowUp.png" alt="" />
+            <img src="imgs/arrowUp.png" alt="" />
           </div>
         </div>
         <div className="option">
           <div className="title">
             <span>Privacy & Help</span>
-            <img src="./arrowUp.png" alt="" />
+            <img src="imgs/arrowUp.png" alt="" />
           </div>
         </div>
         <div className="option">
           <div className="title">
             <span>Shared Photos </span>
-            <img src="./arrowDown.png" alt="" />
+            <img src="imgs/arrowDown.png" alt="" />
           </div>
           <div className="photos">
             {imgs.length !== 0 &&

@@ -127,13 +127,13 @@ function Chat() {
           )}
           <div className="texts">
             <span>{user?.username}</span>
-            <p>Lorem ipsum dolor sit amet consectetur</p>
+            <p>last seen recently</p>
           </div>
         </div>
         <div className="icons">
-          <img src="./phone.png" alt="" />
-          <img src="./video.png" alt="" />
-          <img src="./info.png" alt="" />
+          <img src="imgs/phone.png" alt="" />
+          <img src="imgs/video.png" alt="" />
+          <img src="imgs/info.png" alt="" />
         </div>
       </div>
 
@@ -181,7 +181,7 @@ function Chat() {
       <div className="bottom">
         <div className="icons">
           <label htmlFor="file">
-            <img src="./img.png" alt="" />
+            <img src="imgs/img.png" alt="" />
           </label>
           <input
             type="file"
@@ -189,7 +189,7 @@ function Chat() {
             style={{ display: "none" }}
             onChange={handleImg}
           />
-          <img src="./mic.png" alt="" />
+          <img src="imgs/mic.png" alt="" />
         </div>
 
         <textarea
@@ -211,7 +211,7 @@ function Chat() {
         <div className="emoji">
           <img
             style={{ width: "32px", height: "32px" }}
-            src="./emoji.png"
+            src="imgs/emoji.png"
             alt=""
             onClick={() => setOpen((prev) => !prev)}
           />
